@@ -1,6 +1,5 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { validatePathConfig } from '@react-navigation/native'
 import { icons } from '@/constants'
 
 const VideoCard = ({ video: { title, thumbnail, prompt, Video, creator: { username, avatar } } }: Object) => {
