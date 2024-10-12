@@ -1,12 +1,95 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+// import { View, Text } from 'react-native'
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import React from 'react'
+// import { useLocalSearchParams } from 'expo-router';
+
+// const Search = () => {
+
+//     const { query } = useLocalSearchParams();
+
+//     return (
+//         <SafeAreaView className="bg-primary h-full">
+//             <Text className="text-3xl text-white">{query}</Text>
+//         </SafeAreaView>
+//     )
+// }
+
+// export default Search;
+
+import { View, Text, FlatList, Image } from 'react-native'
+import React, { useEffect } from 'react'
+import { StatusBar } from 'expo-status-bar'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { images } from '@/constants';
+import SearchInput from '@/components/SearchInput'
+import EmptyState from '@/components/EmptyState';
+import { searchPosts } from '@/lib/appwrite';
+import useAppwrite from "@/lib/useAppwrite";
+import VideoCard from '@/components/VideoCard';
+import { useLocalSearchParams } from 'expo-router';
 
 const Search = () => {
+    // calling a custom hook called useAppwrite and passing a function getAllPosts and renaming the data to posts.
+    const { query } = useLocalSearchParams();
+    const { data: posts, refetch } = useAppwrite(() => searchPosts(query));
+
+    // const [refreshing, setRefreshing] = useState(false);
+
+    // const onRefresh = async () => {
+    //     setRefreshing(true)
+
+    //     //recall videos, if any new videos upload
+    //     await refetch();
+    //     setRefreshing(false);
+    // }
+
+    useEffect(() => {
+        refetch()
+    }, [query])
+
+    // console.log("video data is : ", posts);
+
     return (
-        <View>
-            <Text>Search</Text>
-        </View>
+        <SafeAreaView className="bg-primary h-full">
+            <FlatList
+                // data={[{ id: 1 }, { id: 2 }, { id: 3 }]}
+                data={posts}
+                keyExtractor={(item) => item.$id}
+                renderItem={({ item }) => (
+                    // <Text className="text-3xl text-white">{item.title}</Text>
+                    <VideoCard video={item} />
+                )}
+                ListHeaderComponent={(item) => (
+                    <View className="my-6 px-4 space-y-6">
+                        <View className="justify-between items-start flex-row mb-6">
+                            <View>
+                                <Text className="font-pmedium text-sm text-gray-100">Search results</Text>
+                                <Text className="text-2xl font-psemibold text-white">{query}</Text>
+                            </View>
+                            <View className="mt-1.5">
+                                <Image source={images.logoSmall} className="w-9 h-10" resizeMode="contain" />
+
+                            </View>
+                        </View>
+                        <SearchInput initialQuery={query} />
+
+                        {/* <View className="w-full flex-1 pt-5 pb-8">
+                            <Text className="text-gray-100 text-lg font-pregular mb-3">Latest Videos</Text>
+                            <Trending posts={latestPosts} />
+                        </View> */}
+                    </View>
+                )}
+                ListEmptyComponent={() => (
+                    <EmptyState
+                        title="No Videos Found"
+                        subtitle="Be the first one to upload the Video"
+                    />
+                )}
+            // refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            />
+            <StatusBar backgroundColor='#161622' style='light' />
+        </SafeAreaView>
     )
 }
 
-export default Search
+export default Search;

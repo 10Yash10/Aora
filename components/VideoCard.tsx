@@ -1,10 +1,12 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { icons } from '@/constants'
+import { Video, ResizeMode } from "expo-av";
 
-const VideoCard = ({ video: { title, thumbnail, prompt, Video, creator: { username, avatar } } }: Object) => {
+const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avatar } } }: Object) => {
 
     const [play, setPlay] = useState(false);
+    const videoRef = useRef(null);
 
     return (
         <View className="flex-col items-center px-4 mb-14">
@@ -31,25 +33,47 @@ const VideoCard = ({ video: { title, thumbnail, prompt, Video, creator: { userna
                 </View>
 
             </View>
-            {play ? <Text className="text-white">Play</Text> : (
-                <TouchableOpacity
-                    activeOpacity={0.75}
-                    onPress={() => setPlay(true)}
-                    className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
-                >
-                    <Image
-                        source={{ uri: thumbnail }}
-                        className="w-full h-full mt-3"
-                        resizeMode='contain'
+            {play ?
+                (
+                    <Video
+                        ref={videoRef}
+                        // autoPlay
+                        // source={{ uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4" }}
+                        source={{ uri: video }}
+                        // the video stored in appwrite database is no supported. 
+                        className="w-full h-60 rounded-xl mt-3"
+                        // style={{ width: "52px", height: "72?", marginTop: 3, backgroundColor: "white" }}
+                        resizeMode={ResizeMode.CONTAIN}
+                        shouldPlay={true}
+                        isLooping
+                        useNativeControls={true}
+                        onPlaybackStatusUpdate={(status) => {
+                            if (status.didJustFinish) {
+                                setPlay(false);
+                            }
+                        }}
+                        onError={(error) => console.log("Error in Video Playback:", error)}
                     />
+                    // <Text>Playing</Text>
+                ) : (
+                    <TouchableOpacity
+                        activeOpacity={0.75}
+                        onPress={() => setPlay(true)}
+                        className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
+                    >
+                        <Image
+                            source={{ uri: thumbnail }}
+                            className="w-full h-full mt-3"
+                            resizeMode='contain'
+                        />
 
-                    <Image
-                        source={icons.play}
-                        className="w-12 h-12 absolute"
-                        resizeMode="contain"
-                    />
-                </TouchableOpacity>
-            )}
+                        <Image
+                            source={icons.play}
+                            className="w-12 h-12 absolute"
+                            resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                )}
         </View>
     )
 }

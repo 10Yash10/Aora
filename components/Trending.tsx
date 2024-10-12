@@ -26,6 +26,7 @@ const zoomOut = {
 const TrendingItem = ({ activeItem, item }: any) => {
 
     const [play, setPlay] = useState(false);
+    const videoRef = React.useRef(null);
     // console.log("Video ---------------------------------- \n", item.video);
 
     return (
@@ -37,11 +38,21 @@ const TrendingItem = ({ activeItem, item }: any) => {
             {
                 play ? (
                     <Video
+                        ref={videoRef}
+                        // autoPlay
                         source={{ uri: item.video }}
                         className="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
-                        resizeMode={ResizeMode.CONTAIN}
-                        useNativeControls
-                        shouldPlay
+                        // style={{ width: "52px", height: "72?", marginTop: 3, backgroundColor: "white" }}
+                        resizeMode={ResizeMode.COVER}
+                        shouldPlay={true}
+                        isLooping
+                        useNativeControls={true}
+                        onPlaybackStatusUpdate={(status) => {
+                            if (status.didJustFinish) {
+                                setPlay(false);
+                            }
+                        }}
+                        onError={(error) => console.log("Error in Video Playback:", error)}
                     />
                 ) : (
                     <TouchableOpacity
