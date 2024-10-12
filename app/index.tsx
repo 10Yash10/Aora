@@ -40,7 +40,7 @@ export default function Index() {
 
           </View>
           <Text className="text-sm font-pregular text-gray-100 mt-4 text-center">Where creativity meets innovation: embark on a journey of limitless exploration with Aora</Text>
-          <CustomButton title="Let's Login" handlePress={() => router.push('/(auth)/sign-in')} containerStyles="w-full mt-7" textStyles={undefined} isLoading={undefined} />
+          <CustomButton title="Let's Login" handlePress={async () => router.push('/(auth)/sign-in')} containerStyles="w-full mt-7" textStyles={""} isLoading={false} />
           {/* <CustomButton title="Go to" handlePress={() => { <Redirect href="/(auth)sign-in" /> }} containerStyles="w-full mt-7" /> */}
         </View>
       </ScrollView>
